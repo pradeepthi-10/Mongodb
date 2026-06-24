@@ -1,5 +1,6 @@
 const express = require("express")
 const mongoose = require("mongoose")
+const { error } = require("node:console")
 const app = express()
 app.use(express.json())
 mongoose.connect('mongodb://localhost:27017/studentsDb')
@@ -20,8 +21,13 @@ app.get("/",(req,res)=>{
 app.post("/students",async(req,res)=>{
     try{
         const student= await new Student(req,body);
+        await student.save();
+        res.status(201).json({
+            message:'student added sucessfully',student
+        })
     }
-    catch{
+    catch(err){
+        res.status(500).json({error:err.message})
 
     }
 })
