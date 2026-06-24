@@ -1,34 +1,32 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const { error } = require("node:console");
 const app = express();
 app.use(express.json());
-mongoose.connect('mongodb://127.0.0.1:27017/studentDb')
+mongoose.connect("mongodb://127.0.0.1:27017/studentDb")
 .then(() => {
     console.log("mongodb connected");
     app.listen(3001, () => {
-        console.log("Server running on port 3001");
+        console.log("Attendance server running on port 3001");
     });
 })
 .catch(err => console.log(err));
-const studentSchema = new mongoose.Schema({
-    
+const attendanceSchema = new mongoose.Schema({
+    id: Number,
     name: String,
-    rollno:String,
-    percentage:Number,
-    dept: String
+    date: String,
+    status: String
 });
-const Student = mongoose.model('Student', studentSchema);
+const Attendance = mongoose.model("Attendance", attendanceSchema);
 app.get("/", (req, res) => {
-    res.send("Attendence management api has been created successfully");
+    res.send("attendance management api");
 });
-app.post("/students", async (req, res) => {
+app.post("/attendance", async (req, res) => {
     try {
-        const student = new Student(req.body);
-        await student.save();
+        const attendance = new Attendance(req.body);
+        await attendance.save();
         res.status(201).json({
-            message: "student added successfully",
-            student
+            message: "attendance added successfully",
+            attendance
         });
     } catch (err) {
         res.status(500).json({
@@ -36,21 +34,21 @@ app.post("/students", async (req, res) => {
         });
     }
 });
-app.put('/students/:id', async (req, res) => {
+app.put("/attendance/:id", async (req, res) => {
     try {
-        const student = await Student.findOneAndUpdate(
+        const attendance = await Attendance.findOneAndUpdate(
             { id: req.params.id },
             req.body,
             { new: true }
         );
-        if (!student) {
+        if (!attendance) {
             return res.status(404).json({
-                message: 'student not found'
+                message: "attendance not found"
             });
         }
         res.json({
-            message: 'student updated',
-            student
+            message: "attendance updated",
+            attendance
         });
     } catch (err) {
         res.status(500).json({
@@ -58,12 +56,12 @@ app.put('/students/:id', async (req, res) => {
         });
     }
 });
-app.get('/students', async (req, res) => {
+app.get("/attendance", async (req, res) => {
     try {
-        const students = await Student.find();
+        const attendance = await Attendance.find();
         res.json({
-            count: students.length,
-            students
+            count: attendance.length,
+            attendance
         });
     } catch (err) {
         res.status(500).json({
@@ -71,15 +69,23 @@ app.get('/students', async (req, res) => {
         });
     }
 });
-app.delete('/students/:id',async(req,res)=>{
-    try{
-        const student = await Student.findOneAndDelete({
-id:req.params.id
-        })
-        if(!student){
-            return res.status(404).json({message:'student not found'
-            })}
-        res.json({message:"student deleted",student})
-    }catch (err)  {
-    res.status(500).json({error:err.message})
-}})
+app.delete("/attendance/:id", async (req, res) => {
+    try {
+        const attendance = await Attendance.findOneAndDelete({
+            id: req.params.id
+        });
+        if (!attendance) {
+            return res.status(404).json({
+                message: "attendance not found"
+            });
+        }
+        res.json({
+            message: "attendance deleted",
+            attendance
+        });
+    } catch (err) {
+        res.status(500).json({
+            error: err.message
+        });
+    }
+});
