@@ -35,3 +35,32 @@ app.post("/students",async(req,res)=>{
 app.listen(3000,()=>{
     console.log('server is running on port 3000');
 })
+app.put('/students/:id',async(req,res)=>{
+    try{
+        const student= await Student.findByIdAndUpdate(
+        {id:req.body.params},
+        req.body,{new:true}
+        )
+        if(!student){
+            return req.status(404).json({message:"student not found"})
+        }
+    }
+    catch(err){
+     res.status(500).json({error:err.message})
+    }
+    res.json({message:'student updated',student})
+})
+app.delete('/student/:id',async{req,res}=>
+{
+    try{
+        const student=await Student.findOneAndDelete({
+            id:req.param
+        })
+        if(!student){
+            return res.status(404).json({message:'student not found'})
+        }
+        res.json({message:"student deleted"},student)
+    }
+    catch(err)
+}
+)
