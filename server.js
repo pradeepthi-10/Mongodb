@@ -20,7 +20,7 @@ app.get("/",(req,res)=>{
 })
 app.post("/students",async(req,res)=>{
     try{
-        const student= await new Student(req,body);
+        const student= new Student(req.body);
         await student.save();
         res.status(201).json({
             message:'student added sucessfully',student
@@ -30,4 +30,8 @@ app.post("/students",async(req,res)=>{
         res.status(500).json({error:err.message})
 
     }
+})
+
+app.listen(3000,()=>{
+    console.log('server is running on port 3000');
 })
